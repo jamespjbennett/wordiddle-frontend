@@ -11,6 +11,13 @@ const WordGrid = (props) => {
   const [chosenWord, setChosenWord] = useState(
     ["", "", "", "", ""]
   );
+
+  const [inputClassName, setInputClassName] = useState(
+    ["", "", "", "", ""]
+  );
+
+  const [inputDisabled, setInputDisabled] = useState(false)
+
   const inputRef = useRef({});
 
   function updateWord(event) {
@@ -25,12 +32,27 @@ const WordGrid = (props) => {
   function submitWord(event){
     if(event.key == "Enter"){
       if(validWord(chosenWord)){
-        props.submitGuess(chosenWordToString())
+        let result = props.submitGuess(chosenWordToString());
+        displayGuessResult(result.correctWord);
+        setInputDisabled(true);
       }else{
-        alert('invalid yo')
+        alert('invalid yo');
       }
     }
   };
+
+  function displayGuessResult(correctWord){
+    for (var i = 0; i <= 4; i++) {
+      let IndexOfGuessLetterInCorrectWord = correctWord.indexOf(chosenWord[i]);
+      if(IndexOfGuessLetterInCorrectWord != -1){
+        let letterInCorrectPlace = IndexOfGuessLetterInCorrectWord === i;
+        let existingInputClassNames = inputClassName;
+        existingInputClassNames[i] = letterInCorrectPlace ? "green" : "yellow"
+        setInputClassName([...existingInputClassNames]);
+      }
+    };
+    console.log(inputClassName)
+  }
 
   function chosenWordToString(){
     return chosenWord.join("")
@@ -54,6 +76,8 @@ const WordGrid = (props) => {
             onChange={updateWord}
             onKeyPress={submitWord}
             ref={el => inputRef.current[i] = el}
+            className={inputClassName[i]}
+            disabled={inputDisabled}
           />
         </div>
       );
@@ -85,6 +109,7 @@ const Wordiddle = () => {
   function submitGuess(guessWord) {
     console.log("guess is " + guessWord)
     console.log("word is " + selectedWord)
+    return {correctWord: selectedWord}
   }
 
   return (
