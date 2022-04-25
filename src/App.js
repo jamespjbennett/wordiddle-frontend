@@ -7,7 +7,7 @@ const App = () => {
   return <Wordiddle />;
 };
 
-const WordGrid = () => {
+const WordGrid = (props) => {
   const [chosenWord, setChosenWord] = useState(
     ["", "", "", "", ""]
   );
@@ -17,18 +17,17 @@ const WordGrid = () => {
     let existingCurrentWord = chosenWord;
     existingCurrentWord[Number(event.target.name)] = event.target.value
     setChosenWord(existingCurrentWord);
-    console.log(event)
     if(event.target.parentElement.nextElementSibling){
-      event.target.parentElement.nextElementSibling.firstElementChild.focus()
+      event.target.parentElement.nextElementSibling.firstElementChild.focus();
     }
   }
 
   function submitWord(event){
     if(event.key == "Enter"){
       if(validWord(chosenWord)){
-        console.log('ready to submit');
+        props.submitGuess(chosenWordToString())
       }else{
-        console.log('invalid')
+        alert('invalid yo')
       }
     }
   };
@@ -83,15 +82,20 @@ const Wordiddle = () => {
       })
   }, [])
 
+  function submitGuess(guessWord) {
+    console.log("guess is " + guessWord)
+    console.log("word is " + selectedWord)
+  }
+
   return (
     <div className="App">
       {selectedWord}
-      <WordGrid/>
-      <WordGrid/>
-      <WordGrid/>
-      <WordGrid/>
-      <WordGrid/>
-      <WordGrid/>
+      <WordGrid submitGuess={submitGuess}/>
+      <WordGrid submitGuess={submitGuess}/>
+      <WordGrid submitGuess={submitGuess}/>
+      <WordGrid submitGuess={submitGuess}/>
+      <WordGrid submitGuess={submitGuess}/>
+      <WordGrid submitGuess={submitGuess}/>
     </div>
   );
 }
