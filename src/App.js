@@ -21,9 +21,7 @@ const WordGrid = (props) => {
   const inputRef = useRef({})
 
   useEffect(() => {
-    console.log(props)
     if(props.globalInputDisabled){
-      console.log("global input dislabled")
       setInputDisabled(true);
     }
   })
@@ -120,7 +118,6 @@ const WordGrid = (props) => {
 
   return (
     <div className="RowWrapper">
-      {chosenWord}
       {InputFields()}
     </div>
   )
@@ -146,15 +143,11 @@ const Wordiddle = () => {
   }, [])
 
   function submitGuess(guessWord) {
-    console.log("guess is " + guessWord)
-    console.log("word is " + selectedWord)
-    console.log(globalInputDisabled)
     return {correctWord: selectedWord}
   }
 
   return (
     <div className="App">
-      {selectedWord}
       <WordGrid submitGuess={submitGuess} globalInputDisabled={globalInputDisabled} setGlobalInputDisabled={setGlobalInputDisabled}/>
       <WordGrid submitGuess={submitGuess} globalInputDisabled={globalInputDisabled} setGlobalInputDisabled={setGlobalInputDisabled}/>
       <WordGrid submitGuess={submitGuess} globalInputDisabled={globalInputDisabled} setGlobalInputDisabled={setGlobalInputDisabled}/>
