@@ -18,7 +18,15 @@ const WordGrid = (props) => {
 
   const [inputDisabled, setInputDisabled] = useState(false)
 
-  const inputRef = useRef({});
+  const inputRef = useRef({})
+
+  useEffect(() => {
+    console.log(props)
+    if(props.globalInputDisabled){
+      console.log("global input dislabled")
+      setInputDisabled(true);
+    }
+  })
 
   function updateWord(event) {
     let existingCurrentWord = chosenWord;
@@ -35,24 +43,48 @@ const WordGrid = (props) => {
         let result = props.submitGuess(chosenWordToString());
         displayGuessResult(result.correctWord);
         setInputDisabled(true);
+        if(chosenCorrectWord()){
+          alert("You win");
+          props.setGlobalInputDisabled(true);
+        }
       }else{
         alert('invalid yo');
       }
     }
   };
 
+  function chosenCorrectWord(){
+    return inputClassName.filter(color => color == "green").length == 5
+  }
+
+
+  function generateCorrectLetterCountObject(correctWord, chosenWord){
+    const correctLetterCount = {}
+    for (const chosenLetter of chosenWord) {
+      correctLetterCount[chosenLetter] = correctWord.split("").filter(correctLetter => correctLetter==chosenLetter).length
+    };
+    return correctLetterCount
+  }
+
   function displayGuessResult(correctWord){
+    const nonExactMatches = [];
+    const existingInputClassNames = inputClassName;
+    const correctLetterCountObject = generateCorrectLetterCountObject(correctWord, chosenWord)
+    const letterIndexObject = {}
     for (var i = 0; i <= 4; i++) {
-      let IndexOfGuessLetterInCorrectWord = correctWord.indexOf(chosenWord[i]);
-      if(IndexOfGuessLetterInCorrectWord != -1){
-        let letterInCorrectPlace = IndexOfGuessLetterInCorrectWord === i;
-        let existingInputClassNames = inputClassName;
-        existingInputClassNames[i] = letterInCorrectPlace ? "green" : "yellow"
-        setInputClassName([...existingInputClassNames]);
+      if(chosenWord[i].toLocaleLowerCase() == correctWord[i].toLocaleLowerCase()){
+        existingInputClassNames[i] = "green";
+        correctLetterCountObject[chosenWord[i]] = correctLetterCountObject[chosenWord[i]] - 1
+      }else{
+        if (correctLetterCountObject[chosenWord[i]]){
+          existingInputClassNames[i] = "yellow";
+          correctLetterCountObject[chosenWord[i]] = correctLetterCountObject[chosenWord[i]] - 1
+        };
       }
     };
-    console.log(inputClassName)
-  }
+    setInputClassName([...existingInputClassNames]);
+  };
+
 
   function chosenWordToString(){
     return chosenWord.join("")
@@ -78,6 +110,7 @@ const WordGrid = (props) => {
             ref={el => inputRef.current[i] = el}
             className={inputClassName[i]}
             disabled={inputDisabled}
+            maxLength="1"
           />
         </div>
       );
@@ -97,6 +130,12 @@ const Wordiddle = () => {
     null
   );
 
+  const [globalInputDisabled, setGlobalInputDisabled] = useState(false)
+
+  const [win, setWin] = useState(
+    false
+  )
+
   useEffect(() => {
     let url = "https://wordiddle.herokuapp.com/words/sample?testing=true"
       fetch("https://gentle-wave-21974.herokuapp.com/" + url)
@@ -109,18 +148,19 @@ const Wordiddle = () => {
   function submitGuess(guessWord) {
     console.log("guess is " + guessWord)
     console.log("word is " + selectedWord)
+    console.log(globalInputDisabled)
     return {correctWord: selectedWord}
   }
 
   return (
     <div className="App">
       {selectedWord}
-      <WordGrid submitGuess={submitGuess}/>
-      <WordGrid submitGuess={submitGuess}/>
-      <WordGrid submitGuess={submitGuess}/>
-      <WordGrid submitGuess={submitGuess}/>
-      <WordGrid submitGuess={submitGuess}/>
-      <WordGrid submitGuess={submitGuess}/>
+      <WordGrid submitGuess={submitGuess} globalInputDisabled={globalInputDisabled} setGlobalInputDisabled={setGlobalInputDisabled}/>
+      <WordGrid submitGuess={submitGuess} globalInputDisabled={globalInputDisabled} setGlobalInputDisabled={setGlobalInputDisabled}/>
+      <WordGrid submitGuess={submitGuess} globalInputDisabled={globalInputDisabled} setGlobalInputDisabled={setGlobalInputDisabled}/>
+      <WordGrid submitGuess={submitGuess} globalInputDisabled={globalInputDisabled} setGlobalInputDisabled={setGlobalInputDisabled}/>
+      <WordGrid submitGuess={submitGuess} globalInputDisabled={globalInputDisabled} setGlobalInputDisabled={setGlobalInputDisabled}/>
+      <WordGrid submitGuess={submitGuess} globalInputDisabled={globalInputDisabled} setGlobalInputDisabled={setGlobalInputDisabled}/>
     </div>
   );
 }
